@@ -1,17 +1,30 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React, { useState } from 'react'
+import { render } from 'react-dom'
+import loadable from '@loadable/component'
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const Hello = loadable(() => import('./Hello'))
+const Dynamic = loadable(p => import(`./${p.name}`), {
+  cacheKey: p => p.name,
+})
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+function App() {
+  const [name, setName] = useState(null)
+
+  return (
+    <div>
+      <button type="button" onClick={() => setName('A')}>
+        Go to A
+      </button>
+      <button type="button" onClick={() => setName('B')}>
+        Go to B
+      </button>
+      {name && <Dynamic name={name} />}
+      <Hello />
+    </div>
+  )
+}
+
+const root = document.createElement('div')
+document.body.append(root)
+
+render(<App />, root)
